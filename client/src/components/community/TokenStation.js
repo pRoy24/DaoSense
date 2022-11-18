@@ -1,64 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import { useHistory } from 'react-router-dom';
+import { getUserNftMeta } from '../../utils/ERCUtils';
+import { Route } from 'react-router-dom';
+import { UserProfile } from './UserProfile';
 
-export default function TokenStation() {
+export default function TokenStation(props) {
+  const {selectedAddress } = props;
+  const [activeTab, setActiveTab] = useState('profile');
+  const [nftMeta, setNftMeta] = useState({});
   const gotoHome = () => {
-    console.log("HERE");
+
     //history.replace("/home");
   }  
+
+  useEffect(() => {
+    getUserNftMeta(selectedAddress).then(function(userNftMetaResponse) {
+      console.log(userNftMetaResponse);  
+      setNftMeta(userNftMetaResponse);
+    });
+  }, []);
+  let currentPageView = <span />;
+
+  if (activeTab === 'profile') {
+    currentPageView = <UserProfile nftMeta={nftMeta}/>
+  }
   return (
     <div className="text-white p-4 pl-10 text-left">
-        <div>DAO</div>
-
-        <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
-    <li class="mr-2">
-        <a href="#" aria-current="page" class="inline-block p-4 text-blue-600 bg-gray-100 rounded-t-lg active dark:bg-gray-800 dark:text-blue-500">
-          Active Automations
-          </a>
+      <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400">
+        <li class="mr-2" onClick={() => setActiveTab("profile")}>
+          <div class="inline-block p-4 text-slate-100 bg-gray-100 rounded-t-lg active
+          bg-gradient-to-r hover:from-green-400 hover:to-blue-500 from-pink-500 to-yellow-500 
+          w-52 cursor-pointer">
+            Profile
+          </div>
+        </li>
+        <li class="mr-2">
+          <div class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300 w-52">
+          DAO Metrics
+          </div>
     </li>
     <li class="mr-2">
-        <a href="#" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">
+        <div class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300 w-52">
           Discussion Board
-        </a>
+        </div>
     </li>
     <li class="mr-2">
-        <a href="#" class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300">
-          Upcoming Automations
-        </a>
+      <div class="inline-block p-4 rounded-t-lg hover:text-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 dark:hover:text-gray-300 w-52">
+        Upcoming Automations
+      </div>
     </li>
-</ul>
-
-        <div>
-          <div>
-          Allowlist 
-          </div>
-          <div>
-          Must hold 1 Link Token
-          </div>
-          <div>View Automation</div>
-        </div>
-        <div>
-          Minting
-          <div>
-            Maximum 50 mints/day
-          </div>
-          <div>
-            View automation.
-          </div>
-        </div>
-        <div>
-          <div>
-            Emmissions/day
-          </div>
-          <div>
-            (Total burns * 10)/day
-          </div>
-          <div>
-            <a href="">View Automation</a>
-          </div>
-        </div>
+  </ul>
+  <div>
+    {currentPageView} 
+  </div>  
     </div>
   )
 }

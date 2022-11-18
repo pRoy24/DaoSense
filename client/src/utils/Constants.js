@@ -9,5 +9,8 @@ export function getChainById(id) {
   if (chainId === '137') {
     return 'polygon';
   }
+  if (chainId === '80001') {
+    return 'mumbai';
+  }
   return null;
 }

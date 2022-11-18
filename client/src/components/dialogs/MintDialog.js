@@ -1,55 +1,23 @@
 import React, { useState } from 'react';
-import bnb from '../imgs/bnb.svg';
-import ftm from '../imgs/ftm.svg';
-import polygon from '../imgs/p3.webp';
+import plain from '../imgs/plain.png';
+import river from '../imgs/river.png';
+import mountain from '../imgs/mountain.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 
-const tokenList = [
-  {
-    name: 'BSC',
-    symbol: 'bsc',
-    minted: '200',
-    img: bnb,
-    id: '56'
-  },
-  {
-    name: 'Fantom',
-    symbol: 'fantom',
-    minted: '140',
-    img: ftm,
-    id: '250'
-  },
-  {
-    name: 'Polygon',
-    symbol: 'polygon',
-    minted: '100',
-    img: polygon,
-    rowState: 'enabled',
-    id: '137'
-  }
-];
+
 
 export function MintDialog(props) {
   const { mintNFT, hideDialog, show, mintedPlots, getPlotLottery } = props;
-  const [selectedChain, setSelectedChain ] = useState('bsc');
+  const [selectedChain, setSelectedChain ] = useState('goerli');
   const sendMintNftRequest = () => {
-    hideDialog();
+    //hideDialog();
     mintNFT(selectedChain);
   }
-  let eligibiltyBsc = "Eligible";
-
-  const tokenCellCols = tokenList.map(function(tl) {
-
-    const numMints = mintedPlots.filter((mp) => (mp.chain_id === tl.id)).length;
-    return (
-      <PartnerIconCell tokenData={tl} key={`partner_row_${tl.symbol}`} setSelectedChain={setSelectedChain}
-      numMints={numMints}/>
-    )
-  });
 
   const rollPlotLotteryRequest = () => {
-    getPlotLottery();
+    // hideDialog();
+    mintNFT(selectedChain);
 
   }
   let dialogVisibled = `z-10 block`;
@@ -71,7 +39,36 @@ export function MintDialog(props) {
             <FontAwesomeIcon className='right-0 absolute mt-1 mr-2' icon={faTimes} onClick={hideDialog}/>
           </h3>
           <div class="flex flex-row">
-            {tokenCellCols}
+           <div>
+            <div>Probability of mints-</div>
+            <div className='flex flex-row'>
+              <div className='m-2'>
+                <div className='relative'>
+                  <img src={plain} />
+                  <div className='absolute bottom-0 h-6 w-full bg-slate-900 opacity-70 text-center pb-4'>5 variants</div>
+                </div>
+                <div className='text-sm mt-2'>70% Plain-side</div>
+              </div>
+              <div className='m-2'>
+                <div className='relative'>
+                  <img src={river} />
+                  <div className='absolute bottom-0 h-6 w-full bg-slate-900 opacity-70 text-center pb-4'>5 variants</div>
+                </div>
+                <div className='text-sm mt-2'>20% River-side</div>             
+              </div>
+              <div className='m-2'>
+                <div className='relative'>
+                  <img src={mountain} />
+                  <div className='absolute bottom-0 h-6 w-full bg-slate-900 opacity-70 text-center pb-4'>5 variants</div>
+                </div>
+                <div className='text-sm mt-2'>10% Mountain-side</div>
+              </div>
+            </div>
+
+
+
+            <div>Random draw secured by Chainlink VRF</div>
+           </div>
           </div>
           <div class="bg-stone-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
             <button type="button"

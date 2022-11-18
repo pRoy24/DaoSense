@@ -30,7 +30,17 @@ export function TopNav(props) {
   }
 
   if (networkVersion) {
-    if (networkVersion === '5') {
+    if (networkVersion === '80001') {
+      connectionString = <div className='flex flex-row text-green-200 pt-2.5 font-semibold ml-4'>
+      <div>
+        Connected to Mumbai network 
+      </div>
+      <div className='ml-1 pt-0.5 font-bold'>
+        <FontAwesomeIcon icon={faCheck} />
+      </div>
+      </div>     
+    }
+    else if (networkVersion === '5') {
       connectionString = <div className='flex flex-row text-green-200 pt-3 font-semibold  ml-4'>
         Connected to Goerli test network 
         <div className='ml-1 pt-0.5 font-bold'>
@@ -76,7 +86,7 @@ export function TopNav(props) {
   }
   return (
     <div class="container mx-auto ">
-      <div className='top-nav-container rounded-b-md'>
+      <div className='top-nav-container rounded-b-lg bg-emerald-900'>
       <div class="flex h-full">
         <div class="flex-none w-80 h-14 pt-2 font-['Open_Sans'] text-neutral-50 font-bold text-2xl cursor-pointer" onClick={gotoHome}>
           DaoSense
@@ -84,11 +94,11 @@ export function TopNav(props) {
         <div class="grow h-14">
           {connectionString}
         </div>
-        <div class="flex-none w-200 h-40 pr-10 pt-3 text-base text-neutral-50 font-medium">
+        <div class="flex-none w-200 h-10 pr-10 pt-3 text-base text-neutral-50 font-medium">
 
         </div>
 
-        <div class="flex-none w-200 h-40 pr-10 pt-3 text-base text-neutral-50 font-medium">
+        <div class="flex-none w-200 h-10 pr-10 pt-3 text-base text-neutral-50 font-medium">
           {addressString}
         </div>
       </div>  
