@@ -1,0 +1,13 @@
+.App {
+  text-align: center;
+  background-color: #171717; /* Used if the image is unavailable */
+  height: 100vh; /* You must set a specified height */
+  width: 100vw;
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover;
+}
+
+.landing-container {
+  background-color: #012340;
+}
