@@ -5,7 +5,7 @@ import { ethers } from "ethers";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { MintDialog } from '../dialogs/MintDialog';
 import { LandingPanaroma } from './LandingPanaroma';
-import { mintDSPlot, getMintsForUser } from '../../utils/ERCUtils';
+import { mintDSPlot, getMintsForUser, getNLatestNftMedia } from '../../utils/ERCUtils';
 import './landing.scss';
 import {
   Switch,
@@ -24,9 +24,10 @@ export function Landing() {
   const [ mintDialogVisible, setMintDialogVisible ] = useState(false);
   const [ currentProvider, setCurrentProvider ] = useState(null);
   const [ selectedAddress, setSelectedAddress ] = useState('');
-  const [ mintedPlots, setMintedPlots ] = useState([]);
+  const [ latestNftMedia, setLatestNftMedia] = useState([]);
   const [ userMints, setUserMints ] = useState(false);
   const [userPortfolio, setUserPortfolio] = useState([]);
+  
   const connectWallet = () => {
     async function connectInjectProvider() {
       // A Web3Provider wraps a standard Web3 provider, which is
@@ -42,12 +43,8 @@ export function Landing() {
 
   const mintNFT = (chainSelection) => {
     mintDSPlot(selectedAddress).then(function(transactionReceipt) {
-      //hideMintNFTDialog();
-      //setNFTMinted(true);
-      //history.push("/home");
 
     });
-
   }
 
 
@@ -59,6 +56,9 @@ export function Landing() {
 
 
   useEffect(() => {
+    getNLatestNftMedia().then(function(latestNftMedia) {
+      setLatestNftMedia(latestNftMedia);
+    })
     async function onInit() {
       await window.ethereum.enable();
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -106,10 +106,12 @@ export function Landing() {
     }
     onInit();    
   }
+
+  
   const { history } = useHistory();
   console.log(history);
   let indexView = (
-    <LandingPanaroma mintedPlots={mintedPlots} showMintDialog={showMintNFTDialog}
+    <LandingPanaroma latestNftMedia={latestNftMedia} showMintDialog={showMintNFTDialog}
         userPortfolio={userPortfolio} userMints={userMints}/>    
   )
   if (userMints > 0) {
@@ -122,7 +124,7 @@ export function Landing() {
           <MintDialog
             show={mintDialogVisible} mintNFT={mintNFT}
             hideDialog={hideMintNFTDialog}
-            mintedPlots={mintedPlots}/>
+            />
           <div class="container mx-auto landing-container min-h-screen m-auto mt-20 pb-20">
               <Route path="/home">
                 <Home userPortfolio={userPortfolio} selectedAddress={selectedAddress}/>
@@ -130,7 +132,7 @@ export function Landing() {
               <Route path="/community">
                 <TokenStation selectedAddress={selectedAddress}/>
               </Route>
-              <Route path="/">
+              <Route exact path="/">
                 {indexView}
               </Route>              
           </div>

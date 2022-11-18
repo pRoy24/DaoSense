@@ -17,7 +17,6 @@ export default function TokenStation(props) {
 
   useEffect(() => {
     getUserNftMeta(selectedAddress).then(function(userNftMetaResponse) {
-      console.log(userNftMetaResponse);  
       setNftMeta(userNftMetaResponse);
     });
   }, []);

@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 
 import { getChainById } from '../../utils/Constants';
 import linkIcon from '../../resources/link-logo.png';
+import ipfs from '../../resources/ipfs-logo.svg'
+import polygon from '../../resources/polygon_logo.png';
 import { Link, useHistory,  } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -10,10 +12,11 @@ import { faArrowUpRightFromSquare } from '@fortawesome/free-solid-svg-icons'
 export function LandingPanaroma(props) {
   const { history } = useHistory();
 
-  const {mintedPlots,showMintDialog, userPortfolio, } = props;
+  const {latestNftMedia, showMintDialog, userPortfolio, } = props;
   const tokenAddress = process.env.REACT_APP_PLOT_CONTRACT_ADDRESS ; 
 
   let lastMintImages = <span />;
+  console.log(latestNftMedia);
 
   let landingActionBtn = <span />;
   if (userPortfolio && userPortfolio.length > 0) {
@@ -70,7 +73,9 @@ export function LandingPanaroma(props) {
             <p>Minting a plot gives you membership of the DAO</p><p>along with voting rights and rights to token emissions.</p>
           </div>
           <div className='text-xs mt-4'>
-            Powered by Chainlink <img src={linkIcon} className='h-4 inline'/>
+            Powered by <img src={linkIcon} className='h-6 inline mr-1'/>
+            <img src={ipfs} className='h-6 inline mr-1'/>
+            <img src={polygon} className='h-6 inline'/>
           </div>          
           </div>
 
@@ -87,8 +92,12 @@ export function LandingPanaroma(props) {
         rounded-lg shadow-lg cursor-pointer
         text-white pl-10 w-5/5 m-auto pt-4 pb-4 m-4'>
 
-        <div>Latest Mints</div>
-
+        <div className='mb-4 text-center text-lg'>Latest Mints</div>
+        <div className='grid grid-cols-4 gap-4'>
+          {latestNftMedia.map(function(mintItem, mIdx) {
+             return <img src={mintItem.image} className='w-64 border-slate-500	border-2 m-auto shadow-md shadow-slate-900' /> 
+          })}
+        </div> 
       </div>
     </div>
     <div class="grid grid-cols-4 gap-4">

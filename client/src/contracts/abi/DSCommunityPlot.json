@@ -79,6 +79,19 @@
     "anonymous": false,
     "inputs": [
       {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "_requestId",
+        "type": "uint256"
+      }
+    ],
+    "name": "InitFulfillPlotRequest",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
         "indexed": true,
         "internalType": "address",
         "name": "to",
@@ -278,6 +291,19 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bool",
+        "name": "lastRequestStatus",
+        "type": "bool"
+      }
+    ],
+    "name": "VrfRequestPending",
+    "type": "event"
+  },
+  {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
     "outputs": [
@@ -345,30 +371,6 @@
     "name": "burn",
     "outputs": [],
     "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "name": "checkUpkeep",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "upkeepNeeded",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes",
-        "name": "performData",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -576,14 +578,22 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "performData",
-        "type": "bytes"
-      }
-    ],
-    "name": "performUpkeep",
+    "inputs": [],
+    "name": "performDailyAllowlistUpdateTrigger",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "performDailyEmissionUpdateTrigger",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "performDailyMaxMintUpdateTrigger",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -641,19 +651,6 @@
       }
     ],
     "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "requestPlotRoll",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "requestId",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
     "type": "function"
   },
   {

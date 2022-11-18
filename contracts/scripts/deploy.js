@@ -18,7 +18,7 @@ async function deployAndInitContracts() {
   const dsCommPlotDeploy = await dsCommunityPlot.deploy(
     "Dao Sense Community Plot",
     "dscp",
-    "ipfs://QmScrwiGLhBidQXpkEVyfxCQyA4fQMJpSN76Fo1xxPTSYy/",
+    "ipfs://QmTqhTyXHMeLxvgGgN6U5KqXmYqmjHwVTKzEt7ZoRj9s9T/",
     ds_comm_token_contract_address
   );
   await dsCommPlotDeploy.deployed();
