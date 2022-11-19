@@ -295,9 +295,9 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "bool",
-        "name": "lastRequestStatus",
-        "type": "bool"
+        "internalType": "uint256",
+        "name": "lastRequestId",
+        "type": "uint256"
       }
     ],
     "name": "VrfRequestPending",
@@ -369,6 +369,19 @@
       }
     ],
     "name": "burn",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      }
+    ],
+    "name": "claimEmissions",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -578,22 +591,27 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "performDailyAllowlistUpdateTrigger",
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
+    "name": "performDailyAllowlistAndMaxMintUpdateTrigger",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
   },
   {
-    "inputs": [],
+    "inputs": [
+      {
+        "internalType": "bytes",
+        "name": "",
+        "type": "bytes"
+      }
+    ],
     "name": "performDailyEmissionUpdateTrigger",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "performDailyMaxMintUpdateTrigger",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -760,24 +778,6 @@
       }
     ],
     "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "index",
-        "type": "uint256"
-      },
-      {
-        "internalType": "string[]",
-        "name": "hashes",
-        "type": "string[]"
-      }
-    ],
-    "name": "setMetaMap",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

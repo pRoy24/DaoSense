@@ -5,7 +5,8 @@ import { ethers } from "ethers";
 import detectEthereumProvider from '@metamask/detect-provider';
 import { MintDialog } from '../dialogs/MintDialog';
 import { LandingPanaroma } from './LandingPanaroma';
-import { mintDSPlot, getMintsForUser, getNLatestNftMedia } from '../../utils/ERCUtils';
+import { mintDSPlot, getMintsForUser, getNLatestNftMedia, getIsUserEligibleToMint } from '../../utils/ERCUtils';
+import { getGenericWssProvider } from '../../utils/Provider';
 import './landing.scss';
 import {
   Switch,
@@ -20,14 +21,14 @@ import BottomNav from '../nav/BottomNav';
 var API_SERVER = process.env.REACT_APP_API_SERVER;
 
 export function Landing() {
-  const [ rulesDialogVisible, setRulesDialogVisible ] = useState(false);
   const [ mintDialogVisible, setMintDialogVisible ] = useState(false);
-  const [ currentProvider, setCurrentProvider ] = useState(null);
   const [ selectedAddress, setSelectedAddress ] = useState('');
   const [ latestNftMedia, setLatestNftMedia] = useState([]);
   const [ userMints, setUserMints ] = useState(false);
   const [userPortfolio, setUserPortfolio] = useState([]);
-  
+  const [userMintState, setUserMintState] = useState("init");
+  const [ isWalletEligible, setIsWalletEligible ] = useState(false);
+
   const connectWallet = () => {
     async function connectInjectProvider() {
       // A Web3Provider wraps a standard Web3 provider, which is
@@ -42,16 +43,76 @@ export function Landing() {
   }
 
   const mintNFT = (chainSelection) => {
+    setUserMintState("mint_init");    
     mintDSPlot(selectedAddress).then(function(transactionReceipt) {
-
+      setUserMintState("mint_init");
     });
   }
 
+  const listenToMintEvents = () => {
+    const wssProvider = getGenericWssProvider();
+    const filterMint = {
+      address: process.env.REACT_APP_PLOT_CONTRACT_ADDRESS,
+      topics: [
+          // the name of the event, parnetheses containing the data type of each event, no spaces
+          ethers.utils.id("MintUser(address,uint256)"),
+          ethers.utils.hexZeroPad(selectedAddress, 32)
+      ]
+    }    
+    wssProvider.on(filterMint, (data) => {
+      setUserMintState("mint_complete");
+    });
+    const diceRollFilter  = {
+      address: process.env.REACT_APP_PLOT_CONTRACT_ADDRESS,
+      topics: [
+          // the name of the event, parnetheses containing the data type of each event, no spaces
+          ethers.utils.id("MintUser(address,uint256)"),
+          ethers.utils.hexZeroPad(selectedAddress, 32)
+      ]
+    }
+    wssProvider.on(diceRollFilter, (data) => {
+      setUserMintState("dice_roll_init");
+    });
+
+    const mintCompleteFilter =  {
+      address: process.env.REACT_APP_PLOT_CONTRACT_ADDRESS,
+      topics: [
+          // the name of the event, parnetheses containing the data type of each event, no spaces
+          ethers.utils.id("MintUser(address,uint256)"),
+          ethers.utils.hexZeroPad(selectedAddress, 32)
+      ]
+    };
+    wssProvider.on(mintCompleteFilter, (data) => {
+      console.log(data);
+      setUserMintState("dice_roll_complete");
+    });
+
+    const plotRequestFilledFilter = {
+      address: process.env.REACT_APP_PLOT_CONTRACT_ADDRESS,
+      topics: [
+          // the name of the event, parnetheses containing the data type of each event, no spaces
+          ethers.utils.id("PlotRollRequestFulfilled(uint256,uint256[])"),
+      ]
+    }
+    wssProvider.on(plotRequestFilledFilter, (data) => {
+      console.log(data);
+      setUserMintState("plot_request_complete");
+      getMintsForUser(selectedAddress).then(function(userMints) {
+        setUserMints(userMints);
+      });     
+    });    
+  }
 
   useEffect(() => {
-    getMintsForUser(selectedAddress).then(function(userMints) {
-      setUserMints(userMints);
-    });
+    if (selectedAddress) {
+      getMintsForUser(selectedAddress).then(function(userMints) {
+        setUserMints(userMints);
+      });
+      getIsUserEligibleToMint(selectedAddress).then(function(mintEligibleResponse) {
+        setIsWalletEligible(mintEligibleResponse);
+      })
+      listenToMintEvents();
+    }
   }, [selectedAddress]);  
 
 
@@ -75,11 +136,6 @@ export function Landing() {
     }
     onInit();
   }, []);
-
-
-  const hideRulesDialog = () => {
-    setRulesDialogVisible(false); 
-  }
 
   const hideMintNFTDialog = () => {
     setMintDialogVisible(false);
@@ -107,9 +163,6 @@ export function Landing() {
     onInit();    
   }
 
-  
-  const { history } = useHistory();
-  console.log(history);
   let indexView = (
     <LandingPanaroma latestNftMedia={latestNftMedia} showMintDialog={showMintNFTDialog}
         userPortfolio={userPortfolio} userMints={userMints}/>    
@@ -123,7 +176,8 @@ export function Landing() {
           selectedAddress={selectedAddress} connectWeb3={connectWeb3}/>
           <MintDialog
             show={mintDialogVisible} mintNFT={mintNFT}
-            hideDialog={hideMintNFTDialog}
+            hideDialog={hideMintNFTDialog} userMintState={userMintState}
+            isWalletEligible={isWalletEligible}
             />
           <div class="container mx-auto landing-container min-h-screen m-auto mt-20 pb-20">
               <Route path="/home">

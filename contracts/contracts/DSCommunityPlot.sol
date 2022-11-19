@@ -35,17 +35,19 @@ contract DSCommunityPlot is
     event MintUser(address indexed to, uint256 tokenId);
     event TokenIdIncremented(uint tokenId);
 
-    mapping (uint => string[]) meta_mappings;
     uint[] pending_mint_id_meta;
+  
     uint MIN_ALLOWED_AMOUNT = 1;
     uint MAX_ALLOWED_DAY = 50;
     uint DELTA_INCREMENT = 1;
     uint lastSnapshotDailyMint = 0;
+    uint lastEmissionUpdateTimeStamp;
+    uint lastMintUpdateTimeStamp;
     uint lastSnapshotIdCounter;
 
     uint allowListTriggerChangeDelta = 10;
     uint allowListChange = 1;
-    uint allowListCorrelation = 1; // 1 For direction corelation -1 for inverse co-relation
+    uint allowListCorrelation = 1; 
 
     uint maxDailyMintAllowed = 100;
     uint maxDailyMintDelta = 10;
@@ -60,12 +62,13 @@ contract DSCommunityPlot is
     
     uint256 lastBurntSnapshot;
 
+    uint256 interval = 86400;
+
     Counters.Counter private _tokenIdCounter;
 
     string private _baseTokenURI;
 
     mapping(uint => TokenClaim) token_claims;
-
     event PlotRollRequestSent(uint256 requestId);
     event PlotRollRequestFulfilled(uint256 requestId, uint256[] randomWords);
     event VrfRequestPending(uint256 lastRequestId);
@@ -76,18 +79,11 @@ contract DSCommunityPlot is
         bool fulfilled;
         uint256[] randomWords;
     }
-
     mapping(uint256 => RequestStatus) public s_requests; /* requestId --> requestStatus */
-
-    // past requests Id.
     uint256[] public requestIds;
     uint256 public lastRequestId;
-
     uint32 callbackGasLimit = 400000;
-
-    // The default is 3, but you can set this higher.
     uint16 requestConfirmations = 3;
-
     uint32 numWords = 2;
   
     constructor(
@@ -102,11 +98,8 @@ contract DSCommunityPlot is
       _baseTokenURI = baseTokenURI;
       _communityToken = communityToken;
       _setupRole(DEFAULT_ADMIN_ROLE, _msgSender());
-    }
-
-
-    function setMetaMap(uint index, string[] memory hashes) public onlyOwner {
-      meta_mappings[index] = hashes;
+      lastEmissionUpdateTimeStamp = block.timestamp;
+      lastMintUpdateTimeStamp = block.timestamp;  
     }
 
     function _isMintAllowed(address to)
@@ -160,26 +153,32 @@ contract DSCommunityPlot is
     }
   
     function performDailyAllowlistAndMaxMintUpdateTrigger(bytes calldata) external {
-      uint dailyMint = _tokenIdCounter.current() - lastSnapshotIdCounter;
-      uint256 snapshotDelta = dailyMint - lastSnapshotDailyMint;
-      if (snapshotDelta > allowListTriggerChangeDelta) {
-        MIN_ALLOWED_AMOUNT ++;
-        maxDailyMintAllowed -= maxDailyMintDelta;
-      }
-      lastSnapshotIdCounter = _tokenIdCounter.current();
-      lastSnapshotDailyMint = dailyMint;
+       if ((block.timestamp - lastMintUpdateTimeStamp) > interval) {
+        lastMintUpdateTimeStamp = block.timestamp;
+        uint dailyMint = _tokenIdCounter.current() - lastSnapshotIdCounter;
+        uint256 snapshotDelta = dailyMint - lastSnapshotDailyMint;
+        if (snapshotDelta > allowListTriggerChangeDelta) {
+          MIN_ALLOWED_AMOUNT ++;
+          maxDailyMintAllowed -= maxDailyMintDelta;
+        }
+        lastSnapshotIdCounter = _tokenIdCounter.current();
+        lastSnapshotDailyMint = dailyMint;
+       }
     }
 
     function performDailyEmissionUpdateTrigger(bytes calldata) external {
-      uint256 currentBurnt = _communityToken.amountBurnt(); 
-      uint256 burnDiff = currentBurnt - lastBurntSnapshot;
-      uint256 newMintCeil = burnDiff * 5;
-      uint lastTokenId = _tokenIdCounter.current();
-      uint mintPerUser = newMintCeil % lastTokenId;
-      for (uint i = 0; i < lastTokenId; i ++) {
-        token_claims[i].unclaimed += mintPerUser;
+      if ((block.timestamp - lastEmissionUpdateTimeStamp) > interval) {
+        lastEmissionUpdateTimeStamp = block.timestamp;
+        uint256 currentBurnt = _communityToken.amountBurnt(); 
+        uint256 burnDiff = currentBurnt - lastBurntSnapshot;
+        uint256 newMintCeil = burnDiff * 5;
+        uint lastTokenId = _tokenIdCounter.current();
+        uint mintPerUser = newMintCeil % lastTokenId;
+        for (uint i = 0; i < lastTokenId; i ++) {
+          token_claims[i].unclaimed += mintPerUser;
+        }
+        lastBurntSnapshot = currentBurnt;
       }
-      lastBurntSnapshot = currentBurnt;
     }
 
     function claimEmissions(address to) external {
@@ -201,6 +200,8 @@ contract DSCommunityPlot is
 
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) internal override {
       emit InitFulfillPlotRequest(_requestId);
+      s_requests[_requestId].fulfilled = true;
+      s_requests[_requestId].randomWords = _randomWords;     
       for (uint i = 0; i < pending_mint_id_meta.length; i++) {
         uint256 pending_id = pending_mint_id_meta[i];
         uint d10Value = (_randomWords[0] % 10);
@@ -246,10 +247,9 @@ contract DSCommunityPlot is
       _tokenIdCounter.increment();
       emit MintUser(to, tokenId);
       RequestStatus memory lrs = s_requests[lastRequestId];
-      if (lrs.fulfilled == true && lrs.randomWords.length == 2) {
+      if (lrs.paid == 0 || lrs.fulfilled == true ) {
         requestPlotRoll(); 
       }
       emit VrfRequestPending(lastRequestId);
-      
     }
   }

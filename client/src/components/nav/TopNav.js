@@ -9,11 +9,11 @@ export function TopNav(props) {
     selectedAddress, connectWeb3 } = props;
   const history = useHistory();
   const gotoHome = () => {
-    history.replace("/home");
+    history.replace("/");
   }
   useEffect(() => {
     if (nftMinted) {
-      history.replace("/home");
+      history.replace("/");
     }
   }, [nftMinted]);
   let addressString = '';
@@ -73,9 +73,9 @@ export function TopNav(props) {
         </div>
         </div>
     } else {
-      connectionString = <div className='flex flex-row text-red-800 pt-2.5 font-semibold  ml-4'>
+      connectionString = <div className='flex flex-row text-red-500 pt-2.5 font-semibold  ml-4'>
         <div>
-          Unsupported network:  Please switch to Polygon, BSC or Fantom to mint
+          Unsupported network:  Please switch to Polygon Mumbai testnet to mint.
         </div>
         <div className='ml-1 pt-0.5 font-bold'>
           <FontAwesomeIcon icon={faTimes} />

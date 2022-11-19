@@ -9,16 +9,23 @@ Demo video-
 TBD
 
 Demo UI-
-TBD
+https://tomato-obliged-mink-573.mypinata.cloud/ipfs/QmRBaQo5kHcosXKfw4aUXdmSFoG1utjq1TZJ25LzwTqQaA/#/
+
 
 DAONFTContract-
-Polygon -
+Polygon Mumbai
+
+0xb61aCC466891E44475cD4527255C057B4Ef0406f
+
+Community Token Contract Address (Mumbai)
+0x460937241D67A81818FE66f18d8E56D6D6539B64
+
 
 
 **Tools and Technologies used-** 
 Solidity 0.8.9
 Chainlink VRF and Chainlink Automation
-IPFS and Pinata CDN
+IPFS and Pinata
 Polygon Mumbai Testnet
 Quicknode RPC endpoints.
 

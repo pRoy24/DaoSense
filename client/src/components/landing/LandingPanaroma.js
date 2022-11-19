@@ -4,6 +4,7 @@ import { getChainById } from '../../utils/Constants';
 import linkIcon from '../../resources/link-logo.png';
 import ipfs from '../../resources/ipfs-logo.svg'
 import polygon from '../../resources/polygon_logo.png';
+import quicknode from '../../resources/quicknode_logo.png';
 import { Link, useHistory,  } from 'react-router-dom';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
@@ -16,7 +17,6 @@ export function LandingPanaroma(props) {
   const tokenAddress = process.env.REACT_APP_PLOT_CONTRACT_ADDRESS ; 
 
   let lastMintImages = <span />;
-  console.log(latestNftMedia);
 
   let landingActionBtn = <span />;
   if (userPortfolio && userPortfolio.length > 0) {
@@ -72,10 +72,13 @@ export function LandingPanaroma(props) {
           <div className='text-xs'>
             <p>Minting a plot gives you membership of the DAO</p><p>along with voting rights and rights to token emissions.</p>
           </div>
-          <div className='text-xs mt-4'>
-            Powered by <img src={linkIcon} className='h-6 inline mr-1'/>
-            <img src={ipfs} className='h-6 inline mr-1'/>
-            <img src={polygon} className='h-6 inline'/>
+          <div >
+            <div className='text-xs mt-4  p-2 '>
+            Powered by <img src={linkIcon} className='h-6 inline mr-2'/>
+            <img src={ipfs} className='h-6 inline mr-2'/>
+            <img src={polygon} className='h-6 inline mr-2'/>
+            <img src={quicknode} className='h-6 inline mr-2' />
+            </div>
           </div>          
           </div>
 

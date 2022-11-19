@@ -1,10 +1,12 @@
 import contractABI from '../contracts/abi/DSCommunityPlot.json';
+import communityTokenAbi from '../contracts/abi/DSCommunityToken.json';
 import { ethers } from 'ethers';
 import { getProvider, getGenericProvider } from './Provider';
 import axios from 'axios';
 
 const API_SERVER = process.env.REACT_APP_API_SERVER;
 const CONTRACT_ADDRESS = process.env.REACT_APP_PLOT_CONTRACT_ADDRESS;
+const COMMUNITY_TOKEN = process.env.REACT_APP_TOKEN_CONTRACT_ADDRESS;
 
 export async function mintDSPlot(address) {
   const provider = getProvider();
@@ -12,7 +14,7 @@ export async function mintDSPlot(address) {
 
   const Contract = new ethers.Contract(CONTRACT_ADDRESS, contractABI, provider);
   const contractWithSigner = Contract.connect(signer);
-  const txResponse = await contractWithSigner.functions.mintUser(address);
+  const txResponse = await contractWithSigner.functions.mintUser(address, {gasLimit: 900000});
   return txResponse;
 }
 
@@ -60,9 +62,24 @@ export async function getNLatestNftMedia(n) {
 async function getFileJson(fileHash) {
   const dataRes = await axios.get(fileHash);
   const metaJson = dataRes.data;
-  const imageHash = metaJson.image.split("ipfs://")[1]; 
+  const imageHash = metaJson.image ? metaJson.image.split("ipfs://")[1] : ""; 
   const imageURI = `https://tomato-obliged-mink-573.mypinata.cloud/ipfs/${imageHash}`;
   return Object.assign({}, metaJson, {image: imageURI});
 }
 
 
+
+export async function getCommunityTokenDetails() {
+  const provider = getGenericProvider();
+  const communityTokenContract = new ethers.Contract(COMMUNITY_TOKEN, communityTokenAbi, provider);
+  const tokenName = communityTokenContract.name();
+  const tokenSymbol = communityTokenContract.symbol();
+  return {
+    name: tokenName,
+    symbol: tokenSymbol
+  }
+}
+
+export async function getIsUserEligibleToMint() {
+
+}

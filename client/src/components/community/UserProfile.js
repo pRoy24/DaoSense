@@ -1,8 +1,21 @@
 import React from 'react';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faLink } from '@fortawesome/free-solid-svg-icons'
+
+const NFT_CONTRACT_ADDRESS = process.env.REACT_APP_PLOT_CONTRACT_ADDRESS;
 export function UserProfile(props) {
-  console.log(props);
-  const {nftMeta} = props;
+  const {nftMeta, selectedAddress} = props;
+  let nftAttibutes = <span />;
+  if (nftMeta.attributes && nftMeta.attributes.length > 0) {
+    nftAttibutes = 
+      nftMeta.attributes.map(function(atItem, aKey){
+        const key = atItem["attribute_name"];
+        const value = atItem["attribute_value"];
+        return <div key={"idx-" + aKey}>{`${key} : ${value}`}</div>
+      })
+    
+  }
   return (
     <div>
       <div class="grid grid-cols-6 gap-0 mt-4">
@@ -12,7 +25,7 @@ export function UserProfile(props) {
               {nftMeta.name} #{nftMeta.tokenId}
             </div>
             <div className='inline-block text-xs ml-4 underline cursor-pointer'>
-              <a href={`https://testnets.opensea.io/assets/mumbai/0x6da4d69f6a6447b7f34bf0eeda393faa8dd43213/0`}
+              <a href={`https://testnets.opensea.io/assets/mumbai/${NFT_CONTRACT_ADDRESS}/${nftMeta.tokenId}`}
                 target="_blank">
                   View on Opensea
               </a>
@@ -23,7 +36,14 @@ export function UserProfile(props) {
             <img src={nftMeta.image} className="w-64 border-slate-500	border-2 m-auto shadow-md shadow-slate-900" />
           </div>
           <div className='w-3/5'>
+          <div className='text-lg mt-2'>Description</div>
+            <div className='mt-2 mb-2'>
             {nftMeta.description}
+            </div>
+            <div className='text-lg mt-2'>Attributes</div>
+            <div>
+              {nftAttibutes}
+            </div>
           </div>
         </div>
       </div>
@@ -32,15 +52,25 @@ export function UserProfile(props) {
           DAO Emmissions
         </div>      
         <div className='text-left pl-12 '>
-        <div>DAO Token - DSCT</div>
+          <div>DAO Token</div>
+        <div>DS Community Rewards Token (DSCT)</div>
         <div>
-          Your pending emmissions
+          Your pending emmissions 0 <button>Claim</button>
         </div>
         <div>
-          Next Claim at
+          Next Claim at 00:00:00 UTC
         </div>
         <div>
-          Current Emmissions 500/day View automation
+          <div>
+            Current Emmissions 10 * Burns. 
+          </div>
+          <a hred="https://automation.chain.link/mumbai/56501103231743676822420610105274199741200786298291669815693147367877876317391"
+          target="_blank">
+            <button className='bg-slate-900 w-56 h-10 mt-4 rounded-xs'>
+              View automation
+              <FontAwesomeIcon icon={faLink} />
+            </button>
+          </a>
         </div>
     </div>
     </div>

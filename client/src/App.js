@@ -3,7 +3,7 @@ import './App.css';
 import { Landing } from './components/landing/Landing';
 import {
   Switch,
-  BrowserRouter as Router,
+  HashRouter as Router,
 } from "react-router-dom";
 
 function App() {
